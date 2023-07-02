@@ -137,12 +137,51 @@ const section1 = document.querySelector('#section--1');
 btnScrollTo.addEventListener('click', function (e) {
   const s1coords = section1.getBoundingClientRect();
   console.log(s1coords);
-  console.log(e.target.getBoundingClientRect());
-  console.log('Curent scroll (X/Y)', window.scrollX, scrollY);
+  // console.log(e.target.getBoundingClientRect());
+  console.log('Curent scroll (X/Y)', window.scrollX, window.scrollY);
 
   //Scrolling
-  window.scrollTo(
-    s1coords.left + window.scrollX,
-    s1coords.top + window.scrollY
-  );
+  // window.scrollTo(
+  //   s1coords.left + window.scrollX,
+  //   s1coords.top + window.scrollY
+  // );
+
+  // window.scrollTo({
+  //   left: s1coords.left + window.scrollX,
+  //   top: s1coords.top + window.scrollY,
+  //   behavior: 'smooth',
+  // });
+
+  //Modern way scrolling
+
+  section1.scrollIntoView({ behavior: 'smooth' });
 });
+
+///TYPES OF EVENTS AND EVENT HANDLERS
+
+const h1 = document.querySelector('h1');
+
+const alertH1 = function (e) {
+  alert('addEventListener: Great!You are reading the heading');
+  h1.removeEventListener('mouseenter', alertH1);
+};
+
+h1.addEventListener('mouseenter', alertH1); // we remove the event
+
+setTimeout(() => h1.removeEventListener('mouseenter', alertH1), 5000); // we romove the event after 5 seconds passed
+//
+//h1.onmouseenter = function (e) {
+//   alert('onmouseenter: Great!You are reading the heading');
+// };
+
+///❗EVENT PROPAGATION
+// rgb(255,255,255)
+const randomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
+const randomColor = () =>
+  `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
+console.log(randomColor());
+
+// document.querySelector('.nav__link').addEventListener('click', function (e) {
+//   this.style.backgroundColor = randomColor;
+// });
