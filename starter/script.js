@@ -9,6 +9,10 @@ const btnCloseModal = document.querySelector('.btn--close-modal');
 const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScrollTo = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
+const nav = document.querySelector('.nav');
 
 const openModal = function (e) {
   e.preventDefault();
@@ -88,6 +92,69 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
   }
 });
 
+/////❗Tabbed Component
+
+//tabs.forEach(t => t.addEventListener('click', () => console.log('Tabbed')));// this solution will slow down the page if we will have 100 tabs,it will create a copy for all of them
+// Work on functioanlity: Add event handlers to the buttons:
+// We use event Delegation
+// Because we go upwards to the parrent and we want to speciffied we want to select an operations__tab we can use clossest() method
+// we need to attach the eventHandler on the common parent element of the elemnts that we are interested in
+//
+tabsContainer.addEventListener('click', function (e) {
+  const cliked = e.target.closest('.operations__tab');
+
+  //GUARD CLAUSE:
+  if (!cliked) return; // an if statement which will return early if some condition is match
+
+  //REMOVE ACTIVE CLASSES:
+  tabsContent.forEach(tabsc =>
+    tabsc.classList.remove('operations__content--active')
+  );
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
+
+  //ACTIVATE TAB:
+  cliked.classList.add('operations__tab--active');
+
+  // older version // if (cliked) {
+  //cliked.classList.add('operations__tab--active');
+
+  // }
+
+  // ACTIVATE CONTEN AREA:
+  //the information which content area should be displayed is in the data attribute
+  // the atribute data-tab is also in the element. the elemnt which was clicked is stored in variable cliked
+  // we use template string to dynamicaly select the class, we want to get that from data attribute
+  document
+    .querySelector(`.operations__content--${cliked.dataset.tab}`)
+    .classList.add('operations__content--active');
+});
+
+// ❗MENU fade Animation
+//mouse enter do not bubble up and we use mouseover
+nav.addEventListener('mouseover', function (e) {
+  if (e.target.classList.contains('nav__link')) {
+    const link = e.target; // we create a variable wich contains the element we work with
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link'); // we select the siblings of the element// we can use querySelector on an element to search for a certain query in that elemnt.
+    const logo = link.closest('.nav').querySelector('img'); //its the best to move up to closest parent and from there we simply search for an image
+    siblings.forEach(el => {
+      if (el !== link) el.style.opacity = 0.5; //we have to change the opacity of the elements
+      logo.style.opacity = 0.5;
+    });
+  }
+});
+
+nav.addEventListener('mouseout', function (e) {
+  if (e.target.classList.contains('nav__link')) {
+    const link = e.target; // we create a variable wich contains the element we work with
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link'); // we select the siblings of the element// we can use querySelector on an element to search for a certain query in that elemnt.
+    const logo = link.closest('.nav').querySelector('img'); //its the best to move up to closest parent and from there we simply search for an image
+    siblings.forEach(el => {
+      if (el !== link) el.style.opacity = 1; //we have to change the opacity of the elements
+      logo.style.opacity = 1;
+    });
+  }
+});
+
 //////////////////////////////////
 /////////////////////////////////
 /////////////////////////////////
@@ -160,7 +227,7 @@ cookieButton.style.height =
 //cookieButton.style.height = '40px';
 
 //❗CSS Customed Properties (wich we call CSS variables)
-document.documentElement.style.setProperty('--color-primary', 'orangered');
+//document.documentElement.style.setProperty('--color-primary', 'orangered');
 console.log(logo.alt);
 console.log(logo.className);
 console.log(logo.src); // this is the absolute version
@@ -299,40 +366,40 @@ logo.classList.contains('c');
 //
 //❗✅ DOM TRAVERSING
 
-const h1 = document.querySelector('h1'); // selecting elements
+// const h1 = document.querySelector('h1'); // selecting elements
 
-//✍️Going downwards: Selecting child elements
-//querySelector() works on elements also not just on document
-console.log(h1.querySelectorAll('.highlight')); // it will select all the elements with the hichlight class that are children of h1. It will work not matter how deep these child elements would be inside of h1 element
-// if there is another elements with same name of the class they will not get selected because they are not children of the h1 element
-console.log(h1.childNodes); // sometimes we can use direct children
-console.log(h1.children); //works only for direct childrens
-h1.firstElementChild.style.color = 'white';
-h1.lastElementChild.style.color = 'orangered';
+// //✍️Going downwards: Selecting child elements
+// //querySelector() works on elements also not just on document
+// console.log(h1.querySelectorAll('.highlight')); // it will select all the elements with the hichlight class that are children of h1. It will work not matter how deep these child elements would be inside of h1 element
+// // if there is another elements with same name of the class they will not get selected because they are not children of the h1 element
+// console.log(h1.childNodes); // sometimes we can use direct children
+// console.log(h1.children); //works only for direct childrens
+// h1.firstElementChild.style.color = 'white';
+// h1.lastElementChild.style.color = 'orangered';
 
-//✍️Going Upwards: Selecting parents
-console.log(h1.parentNode);
-console.log(h1.parentElement);
+// //✍️Going Upwards: Selecting parents
+// console.log(h1.parentNode);
+// console.log(h1.parentElement);
 
-//Most of the time we need a parent element which is not a direct parent
-// Or we might need to find a parent element no matter how far in the DOM tree.
-// for that we have:
-console.log(
-  (h1.closest('.header').style.background = 'var(--gradient-secondary)')
-); // it selected the closest header to h1 element that has class .headear and aplied style to that element
-// used all the time, mostly for event Delegation
+// //Most of the time we need a parent element which is not a direct parent
+// // Or we might need to find a parent element no matter how far in the DOM tree.
+// // for that we have:
+// console.log(
+//   (h1.closest('.header').style.background = 'var(--gradient-secondary)')
+// ); // it selected the closest header to h1 element that has class .headear and aplied style to that element
+// // used all the time, mostly for event Delegation
 
-console.log((h1.closest('h1').style.background = 'var(--gradient-primary)'));
-/// closest() method finds parents
-/// querySelector() finds children
+// console.log((h1.closest('h1').style.background = 'var(--gradient-primary)'));
+// /// closest() method finds parents
+// /// querySelector() finds children
 
-/// Going Sideways: Selecting Siblings
-// In JS we can acces directly siblings.
-console.log(h1.previousElementSibling);
-console.log(h1.nextElementSibling);
+// /// Going Sideways: Selecting Siblings
+// // In JS we can acces directly siblings.
+// console.log(h1.previousElementSibling);
+// console.log(h1.nextElementSibling);
 
-//If we really need all the siblings:
-console.log(h1.parentElement.children);
-[...h1.parentElement.children].forEach(function (el) {
-  if (el !== h1) el.style.transform = 'scale(0.7)';
-}); // we spread into an array and we loop over the array and we change astyle to all siblings except element itself
+// //If we really need all the siblings:
+// console.log(h1.parentElement.children);
+// [...h1.parentElement.children].forEach(function (el) {
+//   if (el !== h1) el.style.transform = 'scale(0.7)';
+// }); // we spread into an array and we loop over the array and we change astyle to all siblings except element itself
