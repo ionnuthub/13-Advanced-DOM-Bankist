@@ -131,30 +131,46 @@ tabsContainer.addEventListener('click', function (e) {
 
 // ❗MENU fade Animation
 //mouse enter do not bubble up and we use mouseover
-nav.addEventListener('mouseover', function (e) {
+// nav.addEventListener('mouseover', function (e) {
+//   if (e.target.classList.contains('nav__link')) {
+//     const link = e.target; // we create a variable wich contains the element we work with
+//     const siblings = link.closest('.nav').querySelectorAll('.nav__link'); // we select the siblings of the element// we can use querySelector on an element to search for a certain query in that elemnt.
+//     const logo = link.closest('.nav').querySelector('img'); //its the best to move up to closest parent and from there we simply search for an image
+//     siblings.forEach(el => {
+//       if (el !== link) el.style.opacity = 0.5; //we have to change the opacity of the elements
+//       logo.style.opacity = 0.5;
+//     });
+//   }
+// });
+
+// nav.addEventListener('mouseout', function (e) {
+//   if (e.target.classList.contains('nav__link')) {
+//     const link = e.target; // we create a variable wich contains the element we work with
+//     const siblings = link.closest('.nav').querySelectorAll('.nav__link'); // we select the siblings of the element// we can use querySelector on an element to search for a certain query in that elemnt.
+//     const logo = link.closest('.nav').querySelector('img'); //its the best to move up to closest parent and from there we simply search for an image
+//     siblings.forEach(el => {
+//       if (el !== link) el.style.opacity = 1; //we have to change the opacity of the elements
+//       logo.style.opacity = 1;
+//     });
+//   }
+// });
+
+//refactoring: fade animation
+const handleHover = function (e) {
+  //console.log(this, e.currentTarget); // this keyword is equal to current target. currentTarget remained unaltered
   if (e.target.classList.contains('nav__link')) {
     const link = e.target; // we create a variable wich contains the element we work with
     const siblings = link.closest('.nav').querySelectorAll('.nav__link'); // we select the siblings of the element// we can use querySelector on an element to search for a certain query in that elemnt.
     const logo = link.closest('.nav').querySelector('img'); //its the best to move up to closest parent and from there we simply search for an image
     siblings.forEach(el => {
-      if (el !== link) el.style.opacity = 0.5; //we have to change the opacity of the elements
-      logo.style.opacity = 0.5;
+      if (el !== link) el.style.opacity = this;
+      logo.style.opacity = this;
     });
   }
-});
-
-nav.addEventListener('mouseout', function (e) {
-  if (e.target.classList.contains('nav__link')) {
-    const link = e.target; // we create a variable wich contains the element we work with
-    const siblings = link.closest('.nav').querySelectorAll('.nav__link'); // we select the siblings of the element// we can use querySelector on an element to search for a certain query in that elemnt.
-    const logo = link.closest('.nav').querySelector('img'); //its the best to move up to closest parent and from there we simply search for an image
-    siblings.forEach(el => {
-      if (el !== link) el.style.opacity = 1; //we have to change the opacity of the elements
-      logo.style.opacity = 1;
-    });
-  }
-});
-
+};
+//
+nav.addEventListener('mouseover', handleHover.bind(0.5)); // bind() returns a new function.we use it to pass an argument into a handler function
+nav.addEventListener('mouseout', handleHover.bind(1)); // when we set this keyword manualy the become what we set it to.
 //////////////////////////////////
 /////////////////////////////////
 /////////////////////////////////
