@@ -13,6 +13,7 @@ const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
 const nav = document.querySelector('.nav');
+const section2 = document.querySelector('#section--2');
 
 const openModal = function (e) {
   e.preventDefault();
@@ -171,6 +172,89 @@ const handleHover = function (e) {
 //
 nav.addEventListener('mouseover', handleHover.bind(0.5)); // bind() returns a new function.we use it to pass an argument into a handler function
 nav.addEventListener('mouseout', handleHover.bind(1)); // when we set this keyword manualy the become what we set it to.
+
+//❗Sticky Navigation
+// To implement this we use scroll event for now
+//This implementation is very bad for performance
+// scroll event its available on window no document
+// the scroll event fires all the time an change is made in the scroll and make it very bad performance specialy on mobile
+
+// const initialCoords = section1.getBoundingClientRect(); // we get the initial coordonates
+// console.log(initialCoords);
+
+// window.addEventListener('scroll', function () {
+//   console.log(window.scrollY);
+//   if (window.scrollY > initialCoords.top) nav.classList.add('sticky');
+//   else nav.classList.remove('sticky');
+// });
+
+//❗✅ Intersetion Observer API , Sticky Navigation
+// const obsCallback = function (entries, observer) {
+//   entries.forEach(entry => {
+//     console.log(entry);
+//   });
+// }; // we could written the function and object directly in the new IntersectionObserver();
+// //the callbck function will be called each time that the observed element(target element) is intersecting the root element at the threshold we defined
+// // Whenever the first section is intersecting the viewport at 10% the callback function get called no matter we scroll up or down.
+// //the function will get called with 2 arguments
+// // the entries is an array of the threshold entries// we can have multiple thresholds
+// const obsOptions = {
+//   root: null, // null by default is the viewport // we can select an element or we can write null then we will be able to observe our target element intersecting the entire view port// root is the element which we want our target elemnt to intersect
+//   threshold: [0, 0.1], // is the precentaje of intersection at which the observer callback will be called
+// }; // this is the object the viewport
+
+// const observer = new IntersectionObserver(obsCallback, obsOptions); // here we have to pass in a callback function and an object of options
+// observer.observe(section1); // section1 is the target
+
+// const obs = new IntersectionObserver(
+//   function (entries) {
+//     entries.forEach(entry => {
+//       console.log(entry);
+//     });
+//   },
+//   {
+//     root: null,
+//     threshold: 0.1,
+//   }
+// );
+// obs.observe(section1);
+
+//❗We Want our sticky navigation to pop up when the header is not visible
+//Option 1
+const header = document.querySelector('.header'); // we select header element
+
+// const stickyNav = function (entries) {
+//   entries.forEach(entry => {
+//     console.log(entry);
+//     if (!entry.isIntersecting) nav.classList.add('sticky');
+//     else nav.classList.remove('sticky');
+//   });
+// };
+// const headerObserver = new IntersectionObserver(stickyNav, {
+//   root: null,
+//   threshold: 0,
+// });
+// headerObserver.observe(header);
+
+//Option 2
+const navHeight = nav.getBoundingClientRect().height;
+//console.log(navHeight);
+const stickyNav = function (entries) {
+  const [entry] = entries; // we use destructuring assignment
+  console.log(entry);
+  if (!entry.isIntersecting) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
+};
+
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`, // has to be specified in pixely
+});
+headerObserver.observe(header);
+
+//❗Revealing sections Elements on scroll
+
 //////////////////////////////////
 /////////////////////////////////
 /////////////////////////////////
@@ -178,97 +262,97 @@ nav.addEventListener('mouseout', handleHover.bind(1)); // when we set this keywo
 //
 //❗✅ Attributes
 // Standard
-const logo = document.querySelector('.nav__logo');
-//❗✅ Selecting Elements
+// const logo = document.querySelector('.nav__logo');
+// //❗✅ Selecting Elements
 
-console.log(document.documentElement);
-console.log(document.head);
-console.log(document.body);
-const header = document.querySelector('.header'); // when we want to select an element
-const allSections = document.querySelectorAll('.section'); // when we want to select all elements
-console.log(allSections);
-document.getElementById('section--1'); // # we use this id selector just for querrySelector('#section--1') methods.
+// console.log(document.documentElement);
+// console.log(document.head);
+// console.log(document.body);
+// const header = document.querySelector('.header'); // when we want to select an element
+// const allSections = document.querySelectorAll('.section'); // when we want to select all elements
+// console.log(allSections);
+// document.getElementById('section--1'); // # we use this id selector just for querrySelector('#section--1') methods.
 
-const allButtons = document.getElementsByTagName('button'); // this is a HTMLCollection // we dont use the selector ('.button')
-console.log(allButtons);
-// if we delete a button from the collection it will update automaticaly
+// const allButtons = document.getElementsByTagName('button'); // this is a HTMLCollection // we dont use the selector ('.button')
+// console.log(allButtons);
+// // if we delete a button from the collection it will update automaticaly
 
-console.log(document.getElementsByClassName('btn')); // it will return a live HTMLCollection// we don't need the selector ('.btn') because its the name of the classes
+// console.log(document.getElementsByClassName('btn')); // it will return a live HTMLCollection// we don't need the selector ('.btn') because its the name of the classes
 
-////✅❗CREATING and INSERTING Elements✅
-//.insertAdjacentHTML();
-const message = document.createElement('div'); // create a DOM element and store that element in to the message
-// the element is not yet in to the DOM , all this is a DOM obj which we can use to do something on it
-//🖍️We can add classes on it for example
-message.classList.add('cookie-message'); // we programaticaly build an element wich will display a small cokie message on the bottom of the screen
-message.textContent = 'We use cookies for improves functionality';
-message.innerHTML =
-  'We use cookies for improves functionality. <button class ="btn btn--close-cookie">Got it!</button>';
-//❗header.prepend(message); // prepend add the element as first child of the header element
-header.append(message); // append add the element as last child
-// we can use prepend ans append  not only to insert elements but also to move elements, that because the DOM element is unique it can exist at one place at the time
+// ////✅❗CREATING and INSERTING Elements✅
+// //.insertAdjacentHTML();
+// const message = document.createElement('div'); // create a DOM element and store that element in to the message
+// // the element is not yet in to the DOM , all this is a DOM obj which we can use to do something on it
+// //🖍️We can add classes on it for example
+// message.classList.add('cookie-message'); // we programaticaly build an element wich will display a small cokie message on the bottom of the screen
+// message.textContent = 'We use cookies for improves functionality';
+// message.innerHTML =
+//   'We use cookies for improves functionality. <button class ="btn btn--close-cookie">Got it!</button>';
+// //❗header.prepend(message); // prepend add the element as first child of the header element
+// header.append(message); // append add the element as last child
+// // we can use prepend ans append  not only to insert elements but also to move elements, that because the DOM element is unique it can exist at one place at the time
 
-//header.append(message.cloneNode(true)); // if we want to insert multiple copies of the same element, we have to copy the first element
+// //header.append(message.cloneNode(true)); // if we want to insert multiple copies of the same element, we have to copy the first element
 
-//❗ header.before(message);
-//❗header.after(message);
+// //❗ header.before(message);
+// //❗header.after(message);
 
-////✅ DELETE ELEMENTS
-document
-  .querySelector('.btn--close-cookie')
-  .addEventListener('click', function () {
-    message.remove();
-    //message.parentElement.removeChild(message); // old way of remove elements
-  });
+// ////✅ DELETE ELEMENTS
+// document
+//   .querySelector('.btn--close-cookie')
+//   .addEventListener('click', function () {
+//     message.remove();
+//     //message.parentElement.removeChild(message); // old way of remove elements
+//   });
 
-///❗✅STYLE
+// ///❗✅STYLE
 
-message.style.backgroundColor = 'black';
-message.style.width = '120%';
+// message.style.backgroundColor = 'black';
+// message.style.width = '120%';
 
-console.log(message.style.color); // we get nothing because using the style property ,only works for inline styles that we set ourselvs also using the style property
-console.log(message.style.backgroundColor); // these is an inline style ,we set it manualy ourselfs.
+// console.log(message.style.color); // we get nothing because using the style property ,only works for inline styles that we set ourselvs also using the style property
+// console.log(message.style.backgroundColor); // these is an inline style ,we set it manualy ourselfs.
 
-//❗We can get the style hidden in a class with the function:
+// //❗We can get the style hidden in a class with the function:
 
-console.log(getComputedStyle(message).color);
-console.log(getComputedStyle(message).height); // we can get acces to a value even if  we dont computed ourselfs
-message.style.height =
-  Number.parseFloat(getComputedStyle(message).height, 10) + -5 + 'px';
-//message.style.height = '50px';
+// console.log(getComputedStyle(message).color);
+// console.log(getComputedStyle(message).height); // we can get acces to a value even if  we dont computed ourselfs
+// message.style.height =
+//   Number.parseFloat(getComputedStyle(message).height, 10) + -5 + 'px';
+// //message.style.height = '50px';
 
-const cookieButton = document.querySelector('.btn--close-cookie');
-cookieButton.style.height =
-  Number.parseFloat(getComputedStyle(cookieButton).height, 10) + -5 + 'px';
-//cookieButton.style.height = '40px';
+// const cookieButton = document.querySelector('.btn--close-cookie');
+// cookieButton.style.height =
+//   Number.parseFloat(getComputedStyle(cookieButton).height, 10) + -5 + 'px';
+// //cookieButton.style.height = '40px';
 
-//❗CSS Customed Properties (wich we call CSS variables)
-//document.documentElement.style.setProperty('--color-primary', 'orangered');
-console.log(logo.alt);
-console.log(logo.className);
-console.log(logo.src); // this is the absolute version
-console.log(logo.getAttribute('src')); // this is the relative version of the folder where the absolute version is located
-// ON links
-const link = document.querySelector('.nav__link--btn');
-console.log(link.href); //this return absolute value
-console.log(link.getAttribute('href')); // return the value of wich we write it in html (relative version)
-//❗Setting the vallue of the attributes
-logo.alt = 'Beautigul minimalist logo';
+// //❗CSS Customed Properties (wich we call CSS variables)
+// //document.documentElement.style.setProperty('--color-primary', 'orangered');
+// console.log(logo.alt);
+// console.log(logo.className);
+// console.log(logo.src); // this is the absolute version
+// console.log(logo.getAttribute('src')); // this is the relative version of the folder where the absolute version is located
+// // ON links
+// const link = document.querySelector('.nav__link--btn');
+// console.log(link.href); //this return absolute value
+// console.log(link.getAttribute('href')); // return the value of wich we write it in html (relative version)
+// //❗Setting the vallue of the attributes
+// logo.alt = 'Beautigul minimalist logo';
 
-//Non-standard
-console.log(logo.designer);
-console.log(logo.getAttribute('designer'));
-logo.setAttribute('company', 'Bankist'); // Setting (creating atributes)
+// //Non-standard
+// console.log(logo.designer);
+// console.log(logo.getAttribute('designer'));
+// logo.setAttribute('company', 'Bankist'); // Setting (creating atributes)
 
-// DATA ATTRIBUTES (Special Types of Atributes )
-console.log(logo.dataset.versionNumber); // here we use camelCase and in html we have the - (dash)
-// ✍️this special attributes are always stored in the dataset object
+// // DATA ATTRIBUTES (Special Types of Atributes )
+// console.log(logo.dataset.versionNumber); // here we use camelCase and in html we have the - (dash)
+// // ✍️this special attributes are always stored in the dataset object
 
-// Classes
-logo.classList.add('c', 'j');
-logo.classList.remove('c', 'j');
-logo.classList.toggle('c');
-logo.classList.contains('c');
+// // Classes
+// logo.classList.add('c', 'j');
+// logo.classList.remove('c', 'j');
+// logo.classList.toggle('c');
+// logo.classList.contains('c');
 
 ////SCROLLING
 
