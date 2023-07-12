@@ -241,7 +241,7 @@ const navHeight = nav.getBoundingClientRect().height;
 //console.log(navHeight);
 const stickyNav = function (entries) {
   const [entry] = entries; // we use destructuring assignment
-  console.log(entry);
+  //console.log(entry);
   if (!entry.isIntersecting) nav.classList.add('sticky');
   else nav.classList.remove('sticky');
 };
@@ -253,8 +253,59 @@ const headerObserver = new IntersectionObserver(stickyNav, {
 });
 headerObserver.observe(header);
 
-//❗Revealing sections Elements on scroll
+//❗Revealing sections Elements on scroll Intersection API
+const allSections = document.querySelectorAll('.section');
 
+const revealSections = function (entries, observer) {
+  const [entry] = entries;
+  //console.log(entry);
+  if (!entry.isIntersecting) return;
+  entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target); // we unobserve the entry.target(the element)
+};
+
+const sectionsObserver = new IntersectionObserver(revealSections, {
+  root: null,
+  threshold: 0.15,
+});
+
+allSections.forEach(section => {
+  section.classList.add('section--hidden');
+  sectionsObserver.observe(section); // on Intersectionobserver we observe the target
+});
+
+//❗Lazy Loading Images ,Intersection API
+const imgTargets = document.querySelectorAll('img[data-src]'); // we select all the images which have the property of data-src
+console.log(imgTargets);
+
+//Functionality of element
+const loadImg = function (entries, observer) {
+  const [entry] = entries; // we have only one threshold (only 1 entry) and we use destructuring
+  //console.log(entry);
+
+  if (!entry.isIntersecting) return; // return if not intersecting
+  entry.target.src = entry.target.dataset.src; // dataset is where the property information is stored //Replace src with data-src // if not intersecting we want to replace src with dat.src
+  //as we reach the img we replace the placeholder image which is at the src with one we want data.src
+  //Replacing of the source atribute happends behind ths scene
+  //JS finds the new image that it should load and display behind the scenes
+  //Once it's finished loading that image it will emit the load event
+  // on load event we can listen for it and do something
+
+  //entry.target.classList.remove('lazy-img'); //if we remove the lazy class right away the image it will be blured till completly load ,when internet is slow
+  entry.target.addEventListener('load', function () {
+    entry.target.classList.remove('lazy-img');
+  }); //its better to remove that filter after load is done, on that image we add eventlistener and listen for the load event
+
+  observer.unobserve(entry.target);
+};
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root: null,
+  threshold: 0,
+  rootMargin: '200px', // to load the image before we reach it
+}); //we cretate our image observer,with our callback function and the obj with options
+
+imgTargets.forEach(img => imgObserver.observe(img)); //we,create a arrow function and loop over our targets//we use our imgObserver to observe each image
 //////////////////////////////////
 /////////////////////////////////
 /////////////////////////////////
