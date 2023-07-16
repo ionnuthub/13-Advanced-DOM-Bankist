@@ -270,42 +270,76 @@ const sectionsObserver = new IntersectionObserver(revealSections, {
 });
 
 allSections.forEach(section => {
-  section.classList.add('section--hidden');
+  //section.classList.add('section--hidden');
   sectionsObserver.observe(section); // on Intersectionobserver we observe the target
 });
 
-//❗Lazy Loading Images ,Intersection API
-const imgTargets = document.querySelectorAll('img[data-src]'); // we select all the images which have the property of data-src
-console.log(imgTargets);
+//❗Lazy Loading Images ,Intersection API,Performance
+const imgSelection = document.querySelectorAll('img[data-src]');
+//console.log(imgSelection);
 
-//Functionality of element
 const loadImg = function (entries, observer) {
-  const [entry] = entries; // we have only one threshold (only 1 entry) and we use destructuring
-  //console.log(entry);
+  const [entry] = entries;
+  console.log(entry.target);
+  if (!entry.isIntersecting) return;
+  entry.target.src = entry.target.dataset.src;
 
-  if (!entry.isIntersecting) return; // return if not intersecting
-  entry.target.src = entry.target.dataset.src; // dataset is where the property information is stored //Replace src with data-src // if not intersecting we want to replace src with dat.src
-  //as we reach the img we replace the placeholder image which is at the src with one we want data.src
-  //Replacing of the source atribute happends behind ths scene
-  //JS finds the new image that it should load and display behind the scenes
-  //Once it's finished loading that image it will emit the load event
-  // on load event we can listen for it and do something
-
-  //entry.target.classList.remove('lazy-img'); //if we remove the lazy class right away the image it will be blured till completly load ,when internet is slow
   entry.target.addEventListener('load', function () {
     entry.target.classList.remove('lazy-img');
-  }); //its better to remove that filter after load is done, on that image we add eventlistener and listen for the load event
-
-  observer.unobserve(entry.target);
+    observer.unobserve(entry.target);
+  });
 };
-
 const imgObserver = new IntersectionObserver(loadImg, {
   root: null,
-  threshold: 0,
-  rootMargin: '200px', // to load the image before we reach it
-}); //we cretate our image observer,with our callback function and the obj with options
+  threshold: 0.15,
+  rootMargin: '200px',
+});
 
-imgTargets.forEach(img => imgObserver.observe(img)); //we,create a arrow function and loop over our targets//we use our imgObserver to observe each image
+imgSelection.forEach(img => imgObserver.observe(img));
+
+///❗Building a Slider Component
+const slides = document.querySelectorAll('.slide'); //selecting element
+// const slider = document.querySelector('.slider');
+// slider.style.transform = 'scale(0.6) translateX(-300px)';
+// slider.style.overflow = 'visible';
+const bntLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+let curSlide = 0;
+const maxSlide = slides.length;
+
+//Setting precondition for moving the slides . thats mean update the transform property on all of the slides
+//slides.forEach((s, i) => (s.style.transform = `translateX(${100 * i}%)`)); // 1 = 0%,2=100%,3=200%
+
+const goToSlide = function (slide) {
+  slides.forEach(
+    (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
+  );
+  //Setting precondition for moving the slides . thats mean update the transform property on all of the slides
+};
+
+goToSlide(0);
+
+const nextSlide = function () {
+  if (curSlide === maxSlide - 1) {
+    curSlide = 0;
+  } else {
+    curSlide++;
+  }
+  goToSlide(curSlide);
+};
+const prevSlide = function () {
+  if (curSlide === 0) {
+    curSlide = maxSlide - 1;
+  } else {
+    curSlide--;
+  }
+  goToSlide(curSlide);
+};
+
+bntLeft.addEventListener('click', nextSlide);
+
+btnRight.addEventListener('click', prevSlide);
+
 //////////////////////////////////
 /////////////////////////////////
 /////////////////////////////////
