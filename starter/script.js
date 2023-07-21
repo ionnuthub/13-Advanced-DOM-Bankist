@@ -297,13 +297,16 @@ const imgObserver = new IntersectionObserver(loadImg, {
 
 imgSelection.forEach(img => imgObserver.observe(img));
 
-///❗Building a Slider Component
+///❗Building a Slider Component Buttons
+
+//Selecting Elemnts
 const slides = document.querySelectorAll('.slide'); //selecting element
 // const slider = document.querySelector('.slider');
 // slider.style.transform = 'scale(0.6) translateX(-300px)';
 // slider.style.overflow = 'visible';
 const bntLeft = document.querySelector('.slider__btn--left');
 const btnRight = document.querySelector('.slider__btn--right');
+const dotContainer = document.querySelector('.dots');
 let curSlide = 0;
 const maxSlide = slides.length;
 
@@ -326,6 +329,7 @@ const nextSlide = function () {
     curSlide++;
   }
   goToSlide(curSlide);
+  activateColorDot(curSlide);
 };
 const prevSlide = function () {
   if (curSlide === 0) {
@@ -334,12 +338,57 @@ const prevSlide = function () {
     curSlide--;
   }
   goToSlide(curSlide);
+  activateColorDot(curSlide);
 };
 
 bntLeft.addEventListener('click', nextSlide);
 
 btnRight.addEventListener('click', prevSlide);
 
+// ❗Keyboard Events
+// adding eventHandlers to keyboards events . To handle  keyboard Events we have to do it right at the document
+//we use the key to
+// we need the event, we look at the event to figure out wich keys we have to use
+document.addEventListener('keydown', function (e) {
+  console.log(e); // to see the event
+  if (e.key === 'ArrowLeft') nextSlide(curSlide);
+  e.key === 'ArrowRight' && prevSlide(curSlide);
+});
+
+//❗Slider Component Part 2 DOTS ...
+
+//❗Creating Dots:
+const createDots = function () {
+  slides.forEach(function (_, i) {
+    dotContainer.insertAdjacentHTML(
+      'beforeend',
+      `<button class="dots__dot" data-slide="${i}"></button>`
+    );
+  });
+  // we loop over the slides and we create a class with atribute equal to the index to each of the slide (the dots)
+};
+createDots();
+
+// WE use Event Delegation// we handle event higher in the DOM, to the parrent:
+const activateColorDot = function (slide) {
+  document
+    .querySelectorAll('.dots__dot')
+    .forEach(dot => dot.classList.remove('dots__dot--active'));
+
+  document
+    .querySelector(`.dots__dot[data-slide="${slide}"]`)
+    .classList.add('dots__dot--active');
+  // we will select the one in wich we are interested in based on data attribute
+};
+activateColorDot(0);
+
+dotContainer.addEventListener('click', function (e) {
+  if (e.target.classList.contains('dots__dot')) {
+    const { slide } = e.target.dataset; // we get the slides
+    goToSlide(slide); //we move the slides
+    activateColorDot(slide);
+  }
+});
 //////////////////////////////////
 /////////////////////////////////
 /////////////////////////////////
