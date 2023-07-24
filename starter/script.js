@@ -298,97 +298,100 @@ const imgObserver = new IntersectionObserver(loadImg, {
 imgSelection.forEach(img => imgObserver.observe(img));
 
 ///❗Building a Slider Component Buttons
+const slider = function () {
+  //Selecting Elemnts
+  const slides = document.querySelectorAll('.slide'); //selecting element
+  // const slider = document.querySelector('.slider');
+  // slider.style.transform = 'scale(0.6) translateX(-300px)';
+  // slider.style.overflow = 'visible';
+  const bntLeft = document.querySelector('.slider__btn--left');
+  const btnRight = document.querySelector('.slider__btn--right');
+  const dotContainer = document.querySelector('.dots');
+  let curSlide = 0;
+  const maxSlide = slides.length;
 
-//Selecting Elemnts
-const slides = document.querySelectorAll('.slide'); //selecting element
-// const slider = document.querySelector('.slider');
-// slider.style.transform = 'scale(0.6) translateX(-300px)';
-// slider.style.overflow = 'visible';
-const bntLeft = document.querySelector('.slider__btn--left');
-const btnRight = document.querySelector('.slider__btn--right');
-const dotContainer = document.querySelector('.dots');
-let curSlide = 0;
-const maxSlide = slides.length;
-
-//Setting precondition for moving the slides . thats mean update the transform property on all of the slides
-//slides.forEach((s, i) => (s.style.transform = `translateX(${100 * i}%)`)); // 1 = 0%,2=100%,3=200%
-
-const goToSlide = function (slide) {
-  slides.forEach(
-    (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
-  );
   //Setting precondition for moving the slides . thats mean update the transform property on all of the slides
-};
+  //slides.forEach((s, i) => (s.style.transform = `translateX(${100 * i}%)`)); // 1 = 0%,2=100%,3=200%
 
-goToSlide(0);
-
-const nextSlide = function () {
-  if (curSlide === maxSlide - 1) {
-    curSlide = 0;
-  } else {
-    curSlide++;
-  }
-  goToSlide(curSlide);
-  activateColorDot(curSlide);
-};
-const prevSlide = function () {
-  if (curSlide === 0) {
-    curSlide = maxSlide - 1;
-  } else {
-    curSlide--;
-  }
-  goToSlide(curSlide);
-  activateColorDot(curSlide);
-};
-
-bntLeft.addEventListener('click', nextSlide);
-
-btnRight.addEventListener('click', prevSlide);
-
-// ❗Keyboard Events
-// adding eventHandlers to keyboards events . To handle  keyboard Events we have to do it right at the document
-//we use the key to
-// we need the event, we look at the event to figure out wich keys we have to use
-document.addEventListener('keydown', function (e) {
-  console.log(e); // to see the event
-  if (e.key === 'ArrowLeft') nextSlide(curSlide);
-  e.key === 'ArrowRight' && prevSlide(curSlide);
-});
-
-//❗Slider Component Part 2 DOTS ...
-
-//❗Creating Dots:
-const createDots = function () {
-  slides.forEach(function (_, i) {
-    dotContainer.insertAdjacentHTML(
-      'beforeend',
-      `<button class="dots__dot" data-slide="${i}"></button>`
+  //✍️Functions
+  const goToSlide = function (slide) {
+    slides.forEach(
+      (s, i) => (s.style.transform = `translateX(${100 * (i - slide)}%)`)
     );
+    //Setting precondition for moving the slides . thats mean update the transform property on all of the slides
+  };
+
+  const nextSlide = function () {
+    if (curSlide === maxSlide - 1) {
+      curSlide = 0;
+    } else {
+      curSlide++;
+    }
+    goToSlide(curSlide);
+    activateColorDot(curSlide);
+  };
+  const prevSlide = function () {
+    if (curSlide === 0) {
+      curSlide = maxSlide - 1;
+    } else {
+      curSlide--;
+    }
+    goToSlide(curSlide);
+    activateColorDot(curSlide);
+  };
+
+  //❗Slider Component Part 2 DOTS ...
+
+  //❗Creating Dots:
+  const createDots = function () {
+    slides.forEach(function (_, i) {
+      dotContainer.insertAdjacentHTML(
+        'beforeend',
+        `<button class="dots__dot" data-slide="${i}"></button>`
+      );
+    });
+    // we loop over the slides and we create a class with atribute equal to the index to each of the slide (the dots)
+  };
+
+  // WE use Event Delegation// we handle event higher in the DOM, to the parrent:
+  const activateColorDot = function (slide) {
+    document
+      .querySelectorAll('.dots__dot')
+      .forEach(dot => dot.classList.remove('dots__dot--active'));
+
+    document
+      .querySelector(`.dots__dot[data-slide="${slide}"]`)
+      .classList.add('dots__dot--active');
+    // we will select the one in wich we are interested in based on data attribute
+  };
+  const init = function () {
+    goToSlide(0);
+    createDots();
+    activateColorDot(0);
+  };
+  init();
+  // ✍️Event Handlers
+  bntLeft.addEventListener('click', nextSlide);
+
+  btnRight.addEventListener('click', prevSlide);
+  // ❗Keyboard Events
+  // adding eventHandlers to keyboards events . To handle  keyboard Events we have to do it right at the document
+  //we use the key to
+  // we need the event, we look at the event to figure out wich keys we have to use
+  document.addEventListener('keydown', function (e) {
+    console.log(e); // to see the event
+    if (e.key === 'ArrowLeft') nextSlide(curSlide);
+    e.key === 'ArrowRight' && prevSlide(curSlide);
   });
-  // we loop over the slides and we create a class with atribute equal to the index to each of the slide (the dots)
+  dotContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('dots__dot')) {
+      const { slide } = e.target.dataset; // we get the slides
+      goToSlide(slide); //we move the slides
+      activateColorDot(slide);
+    }
+  });
 };
-createDots();
-
-// WE use Event Delegation// we handle event higher in the DOM, to the parrent:
-const activateColorDot = function (slide) {
-  document
-    .querySelectorAll('.dots__dot')
-    .forEach(dot => dot.classList.remove('dots__dot--active'));
-
-  document
-    .querySelector(`.dots__dot[data-slide="${slide}"]`)
-    .classList.add('dots__dot--active');
-  // we will select the one in wich we are interested in based on data attribute
-};
-activateColorDot(0);
-
-dotContainer.addEventListener('click', function (e) {
-  if (e.target.classList.contains('dots__dot')) {
-    const { slide } = e.target.dataset; // we get the slides
-    goToSlide(slide); //we move the slides
-    activateColorDot(slide);
-  }
-});
+slider();
 //////////////////////////////////
 /////////////////////////////////
 /////////////////////////////////
@@ -637,3 +640,32 @@ dotContainer.addEventListener('click', function (e) {
 // [...h1.parentElement.children].forEach(function (el) {
 //   if (el !== h1) el.style.transform = 'scale(0.7)';
 // }); // we spread into an array and we loop over the array and we change astyle to all siblings except element itself
+
+//✅❗LIFECYCLE DOM EVENTS
+document.addEventListener('DOMContentLoaded', function (e) {
+  console.log('HTML parsed and DOM tree built!', e);
+});
+//this event does not wait for images and other external resources to load
+//Just html and js need to be loaded
+//When we have the <script src="script.js"></script> at the end of html we do not need to listen for the DOM CONTENT LOADED EVENT
+//if we come from vanilla JS jQuery  this equivalent to document.ready in jQuery no such thing is necesary in regular js
+
+//❗Load Event (load)
+//Is Fired by the window as soon not only the Html is parsed but also all the images and external resources like CSS files are loaded
+// When the complete page has finished loading is when this event gets fired
+window.addEventListener('load', function (e) {
+  console.log('Page fully loaded', e);
+});
+
+//❗Before unload event (beforeunload)
+//Gets Fired on window
+// This event is created immediatly before a user is about to leave a page
+// We can use this event to ask users if they are 100% sure they want to leave the page
+// window.addEventListener('beforeunload', function (e) {
+//   e.preventDefault(); //in some browser we need to call preventDefault
+//   console.log(e);
+//   //in order to display a leaving confirmation we need to set the return value on the event to an empty string
+//   e.returnValue = '';
+// });
+
+//❗ Efficient Script Loading: defer and async
